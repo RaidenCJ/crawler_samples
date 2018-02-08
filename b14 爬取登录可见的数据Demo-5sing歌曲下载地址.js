@@ -1,7 +1,7 @@
 /*
     神箭手云_爬虫开发示例代码
     支持原生JavaScript
-    开发教程：http://docs.shenjian.io/develop/summary/summary.html
+    开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
     请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
     
     本爬虫爬取的是5sing的原创歌曲信息（http://5sing.kugou.com/yc/list?t=-1），包括文件下载地址
@@ -9,6 +9,7 @@
 */
 
 // 运行和测试时先输入5sing账号信息，爬虫会自动模拟登录
+// 自定义输入的文档介绍：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
 var username = "";//@input(username, 5sing登录账号（歌曲下载地址是登录可见的）)
 var password = "";//@password(password, 5sing登录密码)
 
@@ -70,7 +71,7 @@ configs.initCrawl = function (site) {
 };
 
 configs.onChangeProxy = function (site, page) {
-  // 如果ip切换了，需要重新登录（如果没有使用代理ip，该函数不会调用）
+  // 如果ip切换了，需要重新登录（如果没有开启接入代理ip，该函数不会调用）
   login(site);
 };
 
