@@ -2,13 +2,14 @@
   爬取途牛国内机票价格等信息；
   因为机票信息是js异步加载的，所以该爬虫使用神箭手的自动JS渲染功能；
   只需要设置一个参数‘enableJS’就可以让爬虫自动加载页面所有js，然后和抽取网页源码里的数据一样简单地抽取异步加载的数据。
+  注意：自动JS渲染的时间较长，简单的js请求建议还是用分析请求的方式来爬取更好！
   
   开发语言：原生JavaScript
-  开发教程：http://docs.shenjian.io/develop/summary/summary.html
+  开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
   请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
-  
-  注意：自动JS渲染的时间较长，简单的js请求建议还是用分析请求的方式来爬取更好！
 */
+
+// 设置自定义输入，具体文档介绍：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
 var fromCity="北京";//@input(fromCity,国内出发城市,比如：北京)
 var toCity="上海";//@input(toCity,国内到达城市,比如：上海)
 var date="";//@input(date,出发日期,格式请参考：2016-06-01，如不填写表示当天)
@@ -46,7 +47,7 @@ var configs = {
                 {
                     name: "flight_number",
                     alias: "航班号",
-                    selector: "//div[contains(@class,'flihtnumber')]",
+                    selector: "//div[contains(@class,'flihtnumber')]/span[1]/text()",
                     primaryKey: true // primaryKey设置为true的field会一起作为主键，主键完全相同的数据会自动去重。缺省第一个field是主键
                 },
                 {
@@ -96,7 +97,7 @@ var configs = {
     ]
 };
 
-configs.beforeCrawl = function(site){
+configs.initCrawl = function(site){
     // 爬取前，先获取城市在途牛上的城市码
     var content = site.requestUrl("http://www.tuniu.com/flight/international/getCities");
     if(!content){
@@ -122,7 +123,11 @@ configs.beforeCrawl = function(site){
   
     // 根据取到的城市码，可以得到实际的机票内容页url，并添加到待爬队列中
     var contentUrl = "http://flight.tuniu.com/domestic/list/"+fromCityCode+"_"+toCityCode+"_ST_1_0_0?deptDate="+date;
-    site.addUrl(contentUrl);
+    site.addScanUrl(contentUrl);
+};
+
+configs.onProcessScanPage = function(page, content, site){
+    return false;// 不再从入口页发现新的链接
 };
 
 configs.onProcessContentPage = function(page, content, site){
