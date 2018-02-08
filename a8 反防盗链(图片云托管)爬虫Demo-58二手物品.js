@@ -3,15 +3,16 @@
   该demo主要讲解如何在神箭手上进行图片云托管，图片云托管可以解决有些网站防盗链导致爬取的图片链接失效的问题；
   
   开发语言：原生JavaScript
-  开发教程：http://docs.shenjian.io/develop/summary/summary.html
+  开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
   请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
   
   托管图片的步骤是：
-  1、启动爬虫之前，需要在爬虫设置中勾选"图片云托管"，并且设置托管的位置
+  1、启动爬虫之前，需要在爬虫设置中勾选"图片云托管"，并且设置托管到哪个云存储（目前支持神箭手云存储、阿里云、七牛云和又拍云）
   2、爬取结果里，后缀名是.jpg/.png/.gif/.jpeg的field，或者img标签里的图片，神箭手在爬取过程中会默认进行下载托管
   3、后缀名非以上情况，或者数组里的图片链接，默认不会下载托管，需要在代码中调用内置函数 hostFile （参考以下代码的afterExtractField回调函数）
 */
 
+// 设置自定义输入，具体文档介绍：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
 var cities = ["北京"];//@tags(cities, 请输入要爬取的城市，分别爬取58上这些城市的二手物品信息)
 
 var configs = {
@@ -19,7 +20,6 @@ var configs = {
     scanUrls: [],
     contentUrlRegexes: [/http:\/\/zhuanzhuan\.58\.com\/detail\/\d+z\.shtml.*/],
     helperUrlRegexes: [/http:\/\/.+\.58\.com\/sale\/.*/],
-    enableProxy: true, // 58有反爬，建议使用企业代理ip(不设置此项也可以，在运行爬虫或者测试爬虫之前，选择代理ip种类即可)
     fields: [
         {
             name: "title",
@@ -72,30 +72,32 @@ var configs = {
 };
 
 configs.isAntiSpider = function (url, content, page) {
-   if (content.indexOf("访问过于平频繁，本次访问需要输入验证码") !== -1) {
-        return true;
-    }
-    return false;
+  if (content.indexOf("访问过于平频繁，本次访问需要输入验证码") !== -1) {
+    // 当网页中含有以上文字，强制切换一次ip后继续访问（需先在爬虫设置中开启使用代理ip）
+    return true;
+  }
+  return false;
 };
 
-configs.beforeCrawl = function(site){ 
-    var cityContent = site.requestUrl("http://www.58.com/changecity.html",{enableJS : true});
-    var cityUrls = [];
-    if(cities.length<=0){
-      cityUrls = extractList(cityContent,"//a/@href");
-      for(var i=0;i<cityUrls.length;i++){
-        if(/http:\/\/\w+\.58.com\//.test(cityUrls[i])){
-          site.addScanUrl(cityUrls[i]+"/sale");
-        }
-      }
-    }else{
-      for(var index = 0;index<cities.length;index++){
-        var url = extract(cityContent,"//a[text()='"+cities[index]+"']/@href");
-        if(url){
-          site.addScanUrl(url+"/sale");
-        }
+configs.initCrawl = function(site){ 
+  // 将要爬取城市的二手物品第一页url加入入口页链接队列
+  var cityContent = site.requestUrl("http://www.58.com/changecity.html",{enableJS : true});
+  var cityUrls = [];
+  if(cities.length<=0){
+    cityUrls = extractList(cityContent,"//a/@href");
+    for(var i=0;i<cityUrls.length;i++){
+      if(/http:\/\/\w+\.58.com\//.test(cityUrls[i])){
+        site.addScanUrl(cityUrls[i]+"/sale");
       }
     }
+  }else{
+    for(var index = 0;index<cities.length;index++){
+      var url = extract(cityContent,"//a[text()='"+cities[index]+"']/@href");
+      if(url){
+        site.addScanUrl(url+"/sale");
+      }
+    }
+  }
 };
 
 configs.afterExtractField = function (fieldName, data, page, site) {
