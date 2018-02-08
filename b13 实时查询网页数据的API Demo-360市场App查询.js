@@ -1,11 +1,14 @@
 /*
-	该API接口实时抓取某应用在360市场的评分和下载数等信息，并返回JSON格式的数据
+    该API接口实时抓取并返回某应用在360市场的评分和下载数等信息；
+    调用API时默认返回JSON格式的数据，也可以设置返回JSONP格式。
     
     神箭手云_API接口开发
     支持原生JavaScript
-    开发教程：http://docs.shenjian.io/develop/summary/summary.html
-    请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/api.html
+    开发教程：http://docs.shenjian.io/develop/api/doc/concept.html
+    请在神箭手云上运行代码和调用API：http://docs.shenjian.io/overview/guide/develop/api.html
 */
+
+// 设置API的请求参数，具体文档介绍：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
 var soft_id = "3892415";//@required(soft_id, 要查询的应用id, 比如：http://zhushou.360.cn/detail/index/soft_id/3892415 这个应用的id就是url中的3892415)
 
 var configs = {
