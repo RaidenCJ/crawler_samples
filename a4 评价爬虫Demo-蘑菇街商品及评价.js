@@ -3,10 +3,10 @@
   使用到了关键字动态输入、如何爬取内容页的多页数据。
   
   开发语言：原生JavaScript
-  开发教程：http://docs.shenjian.io/develop/summary/summary.html
+  开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
   请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
 */
-// @input等表示该变量可在爬虫设置中动态设置
+// @input等表示该变量可在爬虫设置中动态设置，具体介绍文档：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
 var keyword = "女装";// @input(keyword,商品搜索关键字，爬取蘑菇街该关键字的搜索结果)
 var encodeKey = encodeURIComponent(keyword); // 将搜索关键字先url encode
 
@@ -56,7 +56,9 @@ var configs = {
           {
               name: "page_comments", // 该页的评价
               sourceType: SourceType.AttachedUrl, // attachedUrl表示在抽取过程中另发请求，再从返回的数据中抽取数据
-              attachedUrl: "http://shop.mogujie.com/ajax/pc.rate.ratelist/v1?pageSize=20&sort=1&isNewDetail=1&itemId={$.product_id}&type=1&page={page}",
+//               attachedUrl: "http://shop.mogujie.com/ajax/pc.rate.ratelist/v1?pageSize=20&sort=1&isNewDetail=1&itemId={$.product_id}&type=1&page={page}",
+              attachedUrl: "http://rate.mogujie.com/ajax/pc.rate.ratelist/v2?pageSize=20&sort=1&isNewDetail=1&itemId={$.product_id}&type=1&page={page}",
+              attachedHeaders: {"referer":"http://shop.mogujie.com/"},// 请求attachedUrl时使用的headers
               selectorType: SelectorType.JsonPath, // 返回的数据是json，使用JsonPath抽取数据
               repeated: true,
               selector: "$.data.list",
@@ -77,14 +79,13 @@ var configs = {
                     name:"author",
                     alias: "评价者",
                     selectorType: SelectorType.JsonPath,
-                    selector:"$.userInfo.uname"
+                    selector:"$.user.uname"
                 },
                 {
-                    name:"stock",
+                    name:"style",
                     alias: "购买信息",
                     selectorType: SelectorType.JsonPath,
-                    selector:"$.stock",
-                    repeated: true
+                    selector:"$.style"
                 }
               ]
           }
@@ -94,7 +95,7 @@ var configs = {
 };
 
 /*
-  回调函数afterDownloadPage：对下载的网页进行处理，返回处理后的网页内容系统再进行数据抽取
+  回调函数afterDownloadPage：对下载的网页进行处理，返回处理后的网页内容再进行数据抽取
 */
 configs.afterDownloadPage = function(page, site){
     var matches = /shop\.mogujie\.com\/detail/.exec(page.url);
@@ -118,7 +119,7 @@ configs.afterDownloadPage = function(page, site){
 };
 
 /*
-  回调函数onProcessHelperUrl：获取下一页列表页和内容页链接，并手动添加到待爬队列中
+  回调函数onProcessHelperPage：获取下一页列表页和内容页链接，并手动添加到待爬队列中
 */
 configs.onProcessHelperPage = function(page, content, site){
     var matches = /page=(\d+)/.exec(page.url);
