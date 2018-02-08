@@ -1,17 +1,19 @@
 /*
-  实时获取新浪财经近5、10、30、60日个股上榜统计数据。包括上榜次数、累积购买额、累积卖出额、净额、买入席位数和卖出席位数。
-  返回JSON格式的多条数据
+  实时爬取并返回新浪财经近5、10、30、60日个股上榜统计数据。包括上榜次数、累积购买额、累积卖出额、净额、买入席位数和卖出席位数。
+  调用API时默认返回JSON格式的多条数据，也可以设置返回JSONP格式。
   
   开发语言：原生JavaScript
-  开发教程：http://docs.shenjian.io/develop/summary/summary.html
-  请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/api.html
+  开发教程：http://docs.shenjian.io/develop/api/doc/concept.html
+  请在神箭手云上运行代码和调用API：http://docs.shenjian.io/overview/guide/develop/api.html
 */
+
+// 设置API的请求参数，具体文档介绍：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
 var days="5";//@input(days,统计周期,5、10、30和60日，默认为5日)
 
 var configs = {
     domains: ["finance.sina.com.cn"],
-    scanUrls: [], // 通过后面的beforeCrawl函数添加入口页链接
-    fields: [ // API只抽取scanurls中的网页，并且不会再自动发现新链接
+    scanUrls: [], // 通过后面的initCrawl函数添加入口页链接
+    fields: [ // API只抽取scanurls（入口页）中的网页，并且不会再自动发现新链接
         {
             name: "items", // 抽取的页面包含多条数据，抽取方式为fields里只包含一个有多个子项的field
             selector: "//table[@id='dataTable']//tr", 
@@ -64,7 +66,7 @@ var configs = {
     ]
 };
 
-configs.beforeCrawl = function(site){
+configs.initCrawl = function(site){
     if(days!=="5" && days!=="10" && days!=="30" && days!=="60"){
       system.exit("输入的统计周期错误。"); // 如果输入错误，停止调用并返回自定义错误信息
     }
