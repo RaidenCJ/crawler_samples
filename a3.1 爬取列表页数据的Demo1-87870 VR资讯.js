@@ -1,9 +1,9 @@
 /*
   爬取87870 VR资讯（http://www.87870.com/news/list_0_1.html）的文章，要爬取的文章标签信息在文章列表页里。
-  所以该Demo中我们使用神箭手提供的 UrlContext 附加数据 将列表页需要的数据附加到内容页中，再进行统一抽取。
+  所以该Demo中我们使用神箭手提供的 UrlContext附加数据 将列表页需要的数据附加到内容页中，再从内容页中进行统一抽取。
   
   开发语言：原生JavaScript
-  开发教程：http://docs.shenjian.io/develop/summary/summary.html
+  开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
   请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
 */
 
@@ -33,7 +33,7 @@ var configs = {
             name: "article_publish_time",
             alias: "发布日期",
             selector: "//span[contains(@class,'pub-time')]",
-            type: "date"
+            type: "timestamp" //type用来标注在神箭手上预览数据的样式。timestamp表示该字段值是时间戳格式（数据预览的时候会自动解析成时间格式）
         },
         {
             name: "article_author",
@@ -93,7 +93,7 @@ configs.afterExtractField = function(fieldName, data, page) {
     }
     if (fieldName == "article_publish_time") {
       var timestamp = parseDateTime(data.trim());
-      return isNaN(timestamp) ? "0" : timestamp/1000 + "";// 时间转换为时间戳格式，方便自动发布文章到网站
+      return isNaN(timestamp) ? "0" : timestamp/1000 + "";// 时间转换为10位时间戳格式，方便在神箭手上自动发布文章到网站
     }
     return data;
 };
