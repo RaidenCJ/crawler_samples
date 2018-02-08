@@ -1,14 +1,14 @@
 /*
     神箭手云_爬虫开发示例代码
     支持原生JavaScript
-    开发教程：http://docs.shenjian.io/develop/summary/summary.html
+    开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
     请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
     
     按分类爬取春雨医生网的健康资讯：https://www.chunyuyisheng.com/pc/health_news/?channel_id=21
     为了保证只爬取指定分类的文章，在页面下载完成后的回调函数里关闭自动链接发现，手动添加指定分类的内容页和列表页url到待爬队列中
 */
 
-// 输入要爬取的分类url，可以输入多个 
+// 输入要爬取的分类url，可以输入多个。 关于自定义输入的文档介绍：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
 var channelUrls = ["https://www.chunyuyisheng.com/pc/health_news/?channel_id=21", "https://www.chunyuyisheng.com/pc/health_news/?channel_id=35"];//@input(channelUrls, 要爬取的资讯分类首页url)
 
 // 定义抽取数据的规则 和 列表页、内容页url正则
