@@ -3,9 +3,11 @@
   自定义输入的详细教程请查阅：http://docs.shenjian.io/develop/extensions/templated.html
   
   开发语言：原生JavaScript
-  开发教程：http://docs.shenjian.io/develop/summary/summary.html
+  开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
   请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
 */
+
+// 自定义输入
 var cities = ["北京"];//@tags(cities,58上的城市名,分别爬取这些城市的二手房信息（如不填写表示爬取全国，如爬取全国爬虫初始化时间较长请耐心等待）)
 
 var configs = {
