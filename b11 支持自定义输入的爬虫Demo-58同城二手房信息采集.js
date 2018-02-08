@@ -1,6 +1,6 @@
 /* 
   设置自定义输入，根据爬虫设置里输入的城市名来爬取这些城市下的二手房信息
-  自定义输入的详细教程请查阅：http://docs.shenjian.io/develop/extensions/templated.html
+  自定义输入的详细教程请查阅：http://docs.shenjian.io/develop/crawler/doc/advanced/templated.html
   
   开发语言：原生JavaScript
   开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
