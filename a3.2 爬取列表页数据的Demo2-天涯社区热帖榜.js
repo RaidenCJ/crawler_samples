@@ -3,7 +3,7 @@
   爬取的数据全部来自于列表页。
   
   开发语言：原生JavaScript
-  开发教程：http://docs.shenjian.io/develop/summary/summary.html
+  开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
   请在神箭手云上运行代码：http://docs.shenjian.io/overview/guide/develop/crawler.html
 */
 var configs = {
@@ -38,31 +38,41 @@ var configs = {
     ]
 };
 
+configs.onProcessScanPage = function (page, content, site) {
+  // 关闭入口页的自动链接发现
+  return false;
+};
+
 /*
-  回调函数onProcessHelperUrl：获取下一页列表页url，并手动添加到待爬队列中
+  回调函数onProcessHelperPage：获取下一页列表页url，并手动添加到待爬队列中
 */
-configs.onProcessHelperUrl = function(url, content, site) {
-    // 从当前列表页中获取下一页的链接
-    var nextUrl = extract(content, "//a[text()[1]='下页']/@href");
-    if(nextUrl==="" || nextUrl===null){
-      return false; //  如果是最后一页就不发现新链接了
-    }
-    site.addUrl(nextUrl);
-    return false; 
+configs.onProcessHelperPage = function (page, content, site) {
+  // 从当前列表页中获取下一页的链接
+  var nextUrl = extract(content, "//a[text()[1]='下页']/@href");
+  if(!nextUrl){
+    return false; //  如果是最后一页就不发现新链接了
+  }
+  site.addUrl(nextUrl);
+  return false;
+};
+
+configs.onProcessContentPage = function (page, content, site) {
+  // 关闭内容页的自动链接发现
+  return false;
 };
 
 /*
   回调函数afterExtractField：对抽取的数据进行处理
 */
 configs.afterExtractField = function(fieldName, data, page){
-    if(data===null || data==="" || typeof(data)=="undefined"){
-      return data;
-    }
-    if(fieldName=="items.replied_time"){ // 子项的fieldName前面要加上： 父项的fieldName.
-      var timestamp = parseDateTime(data); // 回复时间转换成时间戳，parseDateTime可以处理非标准的时间格式，比如：3天前、一个月前等
-      return isNaN(timestamp) ? "0" : timestamp/1000 + ""; // 使用神箭手进行数据发布时，默认处理的时间戳是10位。如非特殊，请转换成10位时间戳
-    }
+  if(!data){
     return data;
+  }
+  if(fieldName=="items.replied_time"){ // 子项的fieldName前面要加上： 父项的fieldName.
+    var timestamp = parseDateTime(data); // 回复时间转换成时间戳，parseDateTime可以处理非标准的时间格式，比如：3天前、一个月前等
+    return isNaN(timestamp) ? "0" : timestamp/1000 + ""; // 使用神箭手发布数据到CMS网站时，CMS网站默认处理的时间戳是10位。如非特殊，请转换成10位时间戳
+  }
+  return data;
 };
 
 var crawler = new Crawler(configs);
