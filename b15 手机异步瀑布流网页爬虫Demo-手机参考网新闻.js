@@ -1,5 +1,5 @@
 /*
-	云爬虫源码：爬取手机参考网（http://m.cankaoxiaoxi.com/）的新闻内容，新闻列表是瀑布流形式
+	云爬虫源码：爬取手机网（http://m.cankaoxiaoxi.com/）的新闻内容，新闻列表是瀑布流形式
     
     开发语言：原生JavaScript
     开发教程：http://docs.shenjian.io/develop/crawler/doc/concept/crawler.html
