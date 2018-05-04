@@ -94,6 +94,9 @@ configs.initCrawl = function(site){
     for(var index = 0;index<cities.length;index++){
       var url = extract(cityContent,"//a[text()='"+cities[index]+"']/@href");
       if(url){
+        if(url.indexOf("http:")==-1){
+          url =  "http:"+url;
+        }
         site.addScanUrl(url+"/sale");
       }
     }
